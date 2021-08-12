@@ -16,7 +16,7 @@ function checkerRegExp (data){
 exports.checkUserInfo = async (req, res, next, property) => {
 
   //get user data
-  let { firstName, lastName, possition, gender, dateOfBirth, image } = req.body;
+  let { firstName, lastName, possition, gender, image } = req.body;
 
   //check property - Is it for creating or updateing user
   if(property === 'create'){
@@ -28,6 +28,9 @@ exports.checkUserInfo = async (req, res, next, property) => {
     }
     
     //chechking all data for create
+    const validEmail = await checkerRegExp(email);
+    if(!validEmail.status) return res.json({message: `${validEmail.data}_is incorrect`});
+
     const validFirstName = await checkerRegExp(firstName);
     if(!validFirstName.status) return res.json({message: `${validFirstName.data}_is incorrect`});
 
@@ -72,22 +75,16 @@ exports.checkUserInfo = async (req, res, next, property) => {
       updateProfileData.gender = gender;
     }
 
-    if(dateOfBirth){
-        const validDateOfBirth = await checkerRegExp(dateOfBirth);
-        if(!validDateOfBirth.status) return res.json({message: `${validDateOfBirth.data}_is incorrect`});
-        updateProfileData.dateOfBirth = dateOfBirth;
-      }
-
     return updateProfileData;
   }
 };
 
 exports.checkProjectInfo = async (req, res, next, property) => {
 
-  //get blog data
+  //get project data
   let { title, document } = req.body;
 
-  //check property - Is it for creating or updateing blog
+  //check property - Is it for creating or updateing project
   if(property === 'create'){
 
     //chechking all data for create

@@ -1,6 +1,13 @@
 const { Schema, model } = require('../lib/dbConnect');
 
 const userSchema = new Schema({
+  email: {
+    type: String,
+    required: true,
+    unique: true,
+    trim: true,
+    index: true,
+  },
   firstName: {
     type: String,
     required: true,

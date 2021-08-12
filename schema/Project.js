@@ -1,5 +1,4 @@
 const { Schema, model } = require('../lib/dbConnect');
-const User = require('./User');
 
 const projectSchema = new Schema({
   title: {
@@ -8,14 +7,16 @@ const projectSchema = new Schema({
     trim: true,
   },
   projectManager: {
-    type: User,
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
     required: true,
   },
   document: {
     type: File,
   },
   developer: {
-    type: User,
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
     required: true,
     trim: true,
   },
