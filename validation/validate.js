@@ -13,16 +13,16 @@ function checkerRegExp (data){
   return ({status: true, data})
 }
 
-exports.checkUserInfo = async (req, res, next, property) => {
+exports.checkUserInfo = async (req, res, property) => {
 
   //get user data
-  let { firstName, lastName, possition, gender, image } = req.body;
+  let { email, firstName, lastName, possition, gender, image } = req.body;
 
   //check property - Is it for creating or updateing user
   if(property === 'create'){
 
     //if not exist some of field of user data - return error
-    if(!firstName || !surname || !possition || !gender || !image){
+    if(!email || !firstName || !lastName || !possition || !gender || !image){
       
       return res.json({message: 'Incomplate fields'});
     }
@@ -51,6 +51,12 @@ exports.checkUserInfo = async (req, res, next, property) => {
     const updateProfileData = {};
 
     //chechking all data for update
+    if(email){
+      const validEmail = await checkerRegExp(email);
+      if(!validEmail.status) return res.json({message: `${validEmail.data}_is incorrect`});
+      updateProfileData.email = email;
+    }
+
     if(firstName){
       const validFirstName = await checkerRegExp(firstName);
       if(!validFirstName.status) return res.json({message: `${validFirstName.data}_is incorrect`});
@@ -79,7 +85,7 @@ exports.checkUserInfo = async (req, res, next, property) => {
   }
 };
 
-exports.checkProjectInfo = async (req, res, next, property) => {
+exports.checkProjectInfo = async (req, res, property) => {
 
   //get project data
   let { title, document } = req.body;

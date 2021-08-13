@@ -55,13 +55,13 @@ exports.createProject = async (req, res, next) => {
     const manager = await User.findById({_id: projectManager});
 
     //find developer manager by id
-    const developer = await User.findById({_id: developer});
+    const dev = await User.findById({_id: developer});
 
     //if manager not found - return error
     if(!manager) return res.json({message: 'Manager not found'});
 
     //if user not found - return error
-    if(!developer) return res.json({message: 'Developer not found'});
+    if(!dev) return res.json({message: 'Developer not found'});
 
     // const image = req.body.image;
 
@@ -73,7 +73,7 @@ exports.createProject = async (req, res, next) => {
       title,
       document,
       projectManager: manager._id,
-      developer: developer._id
+      developer: dev._id
       // image: imageName
     });
 

@@ -1,3 +1,4 @@
+const mongoose = require("mongoose");
 const { Schema, model } = require('../lib/dbConnect');
 
 const projectSchema = new Schema({
@@ -12,7 +13,7 @@ const projectSchema = new Schema({
     required: true,
   },
   document: {
-    type: File,
+    type: Object,
   },
   developer: {
     type: mongoose.Schema.Types.ObjectId,

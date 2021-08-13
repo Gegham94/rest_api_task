@@ -29,13 +29,13 @@ const userSchema = new Schema({
     trim: true,
   },
   dateOfBirth: {
-      type: Date,
-      required: true,
-  },
-  image: {
-    type: String,
+    type: Date,
     required: true,
-    default: "default.jpg"
+  },
+  //must put image data converted Base64 string
+  image: {
+    data: Buffer,
+    contentType: String,
   },
 });
 

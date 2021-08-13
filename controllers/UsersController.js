@@ -1,8 +1,8 @@
 const User = require('../schema/User');
 const valid = require('../validation/validate');
-// const { saveFile } = require('../lib/saveFile');
+const { saveFile } = require('../lib/saveFiles');
 
-exports.getUsers = async(req, res, next) => {
+exports.getAllUsers = async(req, res, next) => {
   try{
 
     //check all users
@@ -35,22 +35,29 @@ exports.getUserById = async(req, res, next) => {
   }
 };
 
-exports.createUser = async(req, res, next) => {
+exports.createUser = async(req, res) => {
   try{
 
     //create property for chechking user data before create
     const property = 'create';
 
     //check user data
-    const checked = await valid.checkUserInfo(req, res, next, property);
+    const checked = await valid.checkUserInfo(req, res, property);
 
     if(!checked) return res.json(checked)
 
     //get user data from request
-    const { email, firstName, lastName, possition, gender, image }= req.body;
+    const { email, firstName, lastName, possition, gender, image } = req.body;
 
-    // //call function for save image with user path
-    // const imageName = await saveFile(image, imgConfPath = 'user', res, next);
+    // String newFileName = "my-image";
+    // File imageFile = new File("/users/victor/images/image.png");
+    // GridFS gfsPhoto = new GridFS(db, "photo");
+    // GridFSInputFile gfsFile = gfsPhoto.createFile(imageFile);
+    // gfsFile.setFilename(newFileName);
+    // gfsFile.save();
+
+    //call function for save image with user path
+    const imageName = await saveFile(image, res);
 
     //create user data
     const newUser = new User({
@@ -59,7 +66,7 @@ exports.createUser = async(req, res, next) => {
       lastName,
       possition,
       gender,
-      // image: imageName
+      image: imageName
     });
 
     //get user by email
@@ -75,7 +82,7 @@ exports.createUser = async(req, res, next) => {
     //call email sender function
 
   } catch (err) {
-    return next(err);
+    return res.json({message: err.message, data: err });
   }
 };
 

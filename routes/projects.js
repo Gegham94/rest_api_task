@@ -1,8 +1,10 @@
 const express = require('express');
 const router = express.Router();
-const projects = require('../controllers/ProjectsController.js');
+const projects = require('../controllers/ProjectsController');
 
-router.get('/', projects.getProjects);
+router.get('/', projects.getAllProjects);
+
+router.get('/:id', projects.getProjectById);
 
 router.post('/create', projects.createProject);
 

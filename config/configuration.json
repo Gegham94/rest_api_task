@@ -1,0 +1,17 @@
+{
+  "server": {
+    "logLevel": "dev",
+    "port": 3000,
+    "url": "http://localhost"
+  },
+  "mongo": {
+    "host": "localhost",
+    "port": 27017,
+    "dbName": "directory",
+    "user": null,
+    "password": null
+  },
+  "media": {
+    "user_original_dir": "../public/img/users/original"
+  }
+}
