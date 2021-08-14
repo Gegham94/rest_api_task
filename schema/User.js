@@ -26,13 +26,12 @@ const userSchema = new Schema({
   gender: {
     type: String,
     required: true,
-    trim: true,
   },
   dateOfBirth: {
-    type: Date,
+    type: String,
     required: true,
   },
-  //must put image data converted Base64 string
+  // must put image data converted Base64 string
   image: {
     data: Buffer,
     contentType: String,

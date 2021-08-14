@@ -1,6 +1,6 @@
 const User = require('../schema/User');
 const valid = require('../validation/validate');
-const { saveFile } = require('../lib/saveFiles');
+const saveFile  = require('../lib/saveFiles');
 
 exports.getAllUsers = async(req, res, next) => {
   try{
@@ -38,23 +38,19 @@ exports.getUserById = async(req, res, next) => {
 exports.createUser = async(req, res) => {
   try{
 
-    //create property for chechking user data before create
-    const property = 'create';
-
     //check user data
-    const checked = await valid.checkUserInfo(req, res, property);
+    const checked = await valid.checkUserInfo(req, res);
 
-    if(!checked) return res.json(checked)
+    if(!checked.status) return res.json(checked)
 
     //get user data from request
-    const { email, firstName, lastName, possition, gender, image } = req.body;
+    const { email, firstName, lastName, possition, gender, dateOfBirth, image } = req.body;
 
-    // String newFileName = "my-image";
-    // File imageFile = new File("/users/victor/images/image.png");
-    // GridFS gfsPhoto = new GridFS(db, "photo");
-    // GridFSInputFile gfsFile = gfsPhoto.createFile(imageFile);
-    // gfsFile.setFilename(newFileName);
-    // gfsFile.save();
+    //get user by email
+    const user = await User.findOne({email})
+
+    //if user already exist - return info message
+    if(user) return res.json({message: `User with email ${email} already exist`});
 
     //call function for save image with user path
     const imageName = await saveFile(image, res);
@@ -66,79 +62,68 @@ exports.createUser = async(req, res) => {
       lastName,
       possition,
       gender,
+      dateOfBirth,
       image: imageName
     });
-
-    //get user by email
-    const user = await User.findOne({email})
-
-    //if user already exist - return info message
-    if(user) return res.json({message: `User with email ${email} already exist`});
   
     //save user in db
     const savedUser = await newUser.save();
-    if(!savedUser) return new Error({ message: 'User are not saved !' });
 
-    //call email sender function
+    if(!savedUser) {
+      return new Error({ message: 'User is not saved !' });
+    }else return({ message: 'User is saved !' });
 
   } catch (err) {
-    return res.json({message: err.message, data: err });
+    return 'Some error occurred while creating the User';
   }
 };
 
-exports.updateUser = async(req, res, next) => {
+exports.updateUser = async(req, res) => {
   try{
 
     //check user data
-    const checked = await valid.checkUserInfo(req, res, next);
+    const checked = await valid.checkUserInfo(req, res);
 
-    if(!checked) return res.json(checked)
+    if(!checked.status) return res.json(checked)
 
-    const user = await User.findOne({email});
+    //get user id from params
+    const id = req.params.id;
 
-    //if user already exist - return info message
-    if(!user) return res.json({message: 'User not found !'});
-
-    //if user change that fields , change it in user too
-    if(checked.firstName) user.firstName = checked.firstName;
-    if(checked.lastName) user.lastName = checked.lastName;
-    if(checked.possition) user.possition = checked.possition;
-    if(checked.gender) user.gender = checked.gender;
-    if(checked.image) user.image = checked.image;
+    User.findByIdAndUpdate(id, req.body, { useFindAndModify: false })
+      .then(data => {
+        if(!data){
+          res.status(404).send({message: 'User is not found !'});
+        }else {
+          res.status(404).send({message: 'User updated'});
+        }
+      });
     
     //call function for save image with user path
     // const imageName = await saveFile(image, imgConfPath = 'user', res, next);
-  
-    //save user in db
-    await user.save();
 
-    return res.json({message: 'User updated'});
+    //return res.json({message: 'User updated'});
 
   } catch (err) {
-    return next(err);
+    return 'Some error occurred while updating the User';
   }
 };
 
 exports.deleteUser = async(req, res, next) => {
   try{
 
-    //get data from user
-    const { email } = req.body;
+    //get user id from params
+    const id = req.params.id;
 
-    //chack user by id
-    const user = await User.findOne({ email })
-
-    //if user are not exist - return error
-    if(!user) return res.json({message: 'User not found-email'});
-
-    //delete user from db
-    const deletedUser = await user.delete({});
-    if(!deletedUser) return res.json({message: 'User are not deleted'});
-    
-    //if user finded - return user
-    return res.json({message: "User are successfuly deleted"});
+    User.findByIdAndRemove(id)
+      .then(data => {
+        if(!data){
+          res.status(404).send({message: 'User is not found !'});
+        }else {
+          res.status(404).send({message: 'User is successfuly deleted'});
+        }
+      });
     
   }catch(err){
-    return next(err);
+    return 'Some error occurred while deleting the User';
   }
 };
