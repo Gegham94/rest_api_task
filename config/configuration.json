@@ -1,5 +1,5 @@
 {
   "media": {
-    "user_original_dir": "../public/img/users/original"
+    "user_image_dir": "../public/images/users"
   }
 }

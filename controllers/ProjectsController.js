@@ -24,12 +24,12 @@ exports.getProjectById = async(req, res, next) => {
     try{
 
       //check project by id
-      const project = await Project.findOne({ _id: req.params.id})
+      const project = await Project.findById({ _id: req.params.id})
 
       //if project is not exist - return error
       if(!project) return next('Project is not found');
 
-      return res.json({message: "Finded project", project });
+      return res.json({message: "Here is project", project });
 
     } catch (err){
       return next(err);
@@ -38,12 +38,9 @@ exports.getProjectById = async(req, res, next) => {
 
 exports.createProject = async (req, res, next) => {
   try {
-    
-    //create property for chechking project data before create
-    const property = 'create';
 
     //check project data
-    const checked = await valid.checkProjectInfo(req, res, next, property);
+    const checked = await valid.checkProjectInfo(req, res);
 
     //if project data is incorrect
     if(!checked) return res.json(checked);
@@ -58,12 +55,10 @@ exports.createProject = async (req, res, next) => {
     const dev = await User.findById({_id: developer});
 
     //if manager not found - return error
-    if(!manager) return res.json({message: 'Manager not found'});
+    if(!manager) return res.json({message: 'Manager is not found'});
 
     //if user not found - return error
-    if(!dev) return res.json({message: 'Developer not found'});
-
-    // const image = req.body.image;
+    if(!dev) return res.json({message: 'Developer is not found'});
 
     //get image name
     // const imageName = await saveFile(image, imgConfPath = 'ads', res, next);
@@ -74,7 +69,6 @@ exports.createProject = async (req, res, next) => {
       document,
       projectManager: manager._id,
       developer: dev._id
-      // image: imageName
     });
 
     //save new project
@@ -87,49 +81,74 @@ exports.createProject = async (req, res, next) => {
   }
 };
 
-exports.updateProject = async (req, res, next) => {
+exports.updateProjectManager = async (req, res, next) => {
   try{
 
-    //check project data
-    const checked = await valid.checkProjectInfo(req, res, next);
+    // find user by Email
+    const user = await User.findOne(req.body.email);
 
-    //if project data is incorrect
-    if(!checked) return next('Please enter correct information')
+    //if user is not exist - return error
+    if(!user) return res.json({message: "User is not found"});
 
-    //get image name
-    // const imageName = await saveFile(image, imgConfPath = 'ads', res, next);
+    Project.findByIdAndUpdate(req.params.id,
+      {
+        $set: {
+          projectManager: user
+        }
+      },
+      (err, data) => {
+        if(err) return res.json(err);
+        return res.json({message: 'Manager is updated', data});
+      }
+    );
 
-    //find project by id
-    const project = await Project.findById({ _id: req.params.id});
-    
-    //if project is not exist - return error
-    if(!project) return next("Project can not updated");
-
-    //if user change that fields , change it in project too
-    if(checked.title) project.title = checked.title;
-    if(checked.document) project.document = checked.document;
-
-    //save changed project in db
-    await project.save();
-
-    return res.json({message: 'Project updated'});
-    
   } catch(err){
     return next(err)
   }
 };
 
-exports.deleteProject = async (req, res, next) => {
+exports.updateProjectDeveloper = async (req, res, next) => {
   try{
-    //check project by id
-    const project = await Project.deleteOne({ _id: req.params.id});
 
-    //if project is not exist - return error
-    if(!project) return next('Project is not exist');
+    // find user by Email
+    const user = await User.findOne(req.body.email);
 
-    return res.json({message: "Project is deleted", data: project });
+    //if user is not exist - return error
+    if(!user) return res.json({message: "User is not found"});
+
+    Project.findByIdAndUpdate(req.params.id,
+      {
+        $set: {
+          developer: user
+        }
+      },
+      (err, data) => {
+        if(err) return res.json(err);
+        return res.json({message: 'Developer is updated', data});
+      }
+    );
+
+  } catch(err){
+    return next(err)
+  }
+};
+
+exports.deleteProject = async (req, res) => {
+  try{
+
+    //get project id from params
+    const id = req.params.id;
+
+    Project.findByIdAndRemove(id)
+      .then(data => {
+        if(!data){
+          res.status(404).send({message: 'Project is not found !'});
+        }else {
+          res.status(404).send({message: 'Project is successfuly deleted'});
+        }
+      });
 
   } catch (err){
-    return next(err);
+    return 'Some error durring delete project';
   }
 };

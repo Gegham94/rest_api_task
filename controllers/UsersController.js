@@ -22,13 +22,13 @@ exports.getUserById = async(req, res, next) => {
   try{
 
     //chack user by id
-    const user = await User.findOne({ _id: req.params.id})
+    const user = await User.findById({ _id: req.params.id})
 
     //if user are not exist - return error
-    if(!user) return res.json({message: 'User not found'});
+    if(!user) return res.json({message: 'User is not found'});
     
     //if user finded - return user
-    return res.json({message: "Finded user", data: user });
+    return res.json({message: "Here is user", data: user });
     
   }catch(err){
     return next(err);
@@ -53,7 +53,7 @@ exports.createUser = async(req, res) => {
     if(user) return res.json({message: `User with email ${email} already exist`});
 
     //call function for save image with user path
-    const imageName = await saveFile(image, res);
+    //const imageName = await saveFile(image, res);
 
     //create user data
     const newUser = new User({
@@ -94,7 +94,7 @@ exports.updateUser = async(req, res) => {
         if(!data){
           res.status(404).send({message: 'User is not found !'});
         }else {
-          res.status(404).send({message: 'User updated'});
+          res.status(404).send({message: 'User is updated'});
         }
       });
     
@@ -124,6 +124,6 @@ exports.deleteUser = async(req, res, next) => {
       });
     
   }catch(err){
-    return 'Some error occurred while deleting the User';
+    return 'Some error durring delete user';
   }
 };

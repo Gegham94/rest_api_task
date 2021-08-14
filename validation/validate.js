@@ -53,11 +53,17 @@ exports.checkUserInfo = async (req, res) => {
 exports.checkProjectInfo = async (req, res) => {
 
   //get project data
-  let { title, document } = req.body;
+  let { title, document, projectManager, developer } = req.body;
 
   //chechking all data for create
   const validTitle = await checkerRegExp(title);
   if(!validTitle.status) return res.json({message: `${validTitle.data}_is incorrect`});
+
+  // check - is there a Manager
+  if(!projectManager) return res.json({message: "Manager is required"});
+
+  // check - is there a Developer
+  if(!developer) return res.json({message: "Developer is required"});
 
   if(document){
     const docExtName = await path.extname(document)
