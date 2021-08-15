@@ -44,16 +44,16 @@ exports.createUser = async(req, res) => {
     if(!checked.status) return res.json(checked)
 
     //get user data from request
-    const { email, firstName, lastName, possition, gender, dateOfBirth, image } = req.body;
+    const { email, firstName, lastName, possition, gender, dateOfBirth } = req.body;
 
     //get user by email
     const user = await User.findOne({email})
 
     //if user already exist - return info message
-    if(user) return res.json({message: `User with email ${email} already exist`});
+    if(user.length === 0) return res.json({message: `User with email ${email} already exist`});
 
     //call function for save image with user path
-    //const imageName = await saveFile(image, res);
+    imageName = await saveFile(req.body.image, res);
 
     //create user data
     const newUser = new User({
@@ -84,6 +84,9 @@ exports.updateUser = async(req, res) => {
     //check user data
     const checked = await valid.checkUserInfo(req, res);
 
+    //call function for save image with user path
+    //const imageName = await saveFile(req.body.image, imgConfPath = 'user', res, next);
+
     if(!checked.status) return res.json(checked)
 
     //get user id from params
@@ -97,11 +100,8 @@ exports.updateUser = async(req, res) => {
           res.status(404).send({message: 'User is updated'});
         }
       });
-    
-    //call function for save image with user path
-    // const imageName = await saveFile(image, imgConfPath = 'user', res, next);
 
-    //return res.json({message: 'User updated'});
+    return res.json({message: 'User updated'});
 
   } catch (err) {
     return 'Some error occurred while updating the User';
