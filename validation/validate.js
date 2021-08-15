@@ -23,8 +23,8 @@ exports.checkUserInfo = async (req, res) => {
 
     return res.json({message: 'Incomplate fields'});
 
-  } else if( gender=='male' || gender =='female')
-
+  } 
+    else if( gender=='male' || gender =='female')
   {
     //chechking all data for create
     const validEmail = await checkerRegExp(email);
@@ -53,17 +53,11 @@ exports.checkUserInfo = async (req, res) => {
 exports.checkProjectInfo = async (req, res) => {
 
   //get project data
-  let { title, document, projectManager, developer } = req.body;
+  let { title, document } = req.body;
 
   //chechking all data for create
   const validTitle = await checkerRegExp(title);
   if(!validTitle.status) return res.json({message: `${validTitle.data}_is incorrect`});
-
-  // check - is there a Manager
-  if(!projectManager) return res.json({message: "Manager is required"});
-
-  // check - is there a Developer
-  if(!developer) return res.json({message: "Developer is required"});
 
   if(document){
     const docExtName = await path.extname(document)

@@ -7,10 +7,10 @@ const projectSchema = new Schema({
     required: true,
     trim: true,
   },
-  projectManager: {
+  manager: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
-    required: true,
+    trim: true,
   },
   document: {
     type: Object,
@@ -18,7 +18,6 @@ const projectSchema = new Schema({
   developer: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
-    required: true,
     trim: true,
   },
 });

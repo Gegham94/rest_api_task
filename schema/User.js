@@ -34,6 +34,8 @@ const userSchema = new Schema({
   // must put image data converted Base64 string
   image: {
     type: String,
+    data: Buffer,
+    contentType: String,
     default: "defailt.jpg",
 
   },

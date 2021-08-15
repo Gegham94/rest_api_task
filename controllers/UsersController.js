@@ -9,7 +9,7 @@ exports.getAllUsers = async(req, res, next) => {
     const users = await User.find({});
 
     //if users are not exist - return error
-    if(!users) return res.json({message: 'Users are not exist'});
+    if(users.length===0) return res.json({message: 'Users are not exist'});
       
     return res.json(users);
 
@@ -25,7 +25,7 @@ exports.getUserById = async(req, res, next) => {
     const user = await User.findById({ _id: req.params.id})
 
     //if user are not exist - return error
-    if(!user) return res.json({message: 'User is not found'});
+    if(users.length==0) return res.json({message: 'User is not found'});
     
     //if user finded - return user
     return res.json({message: "Here is user", data: user });
