@@ -18,14 +18,9 @@ exports.checkUserInfo = async (req, res) => {
   //get user data
   let { email, firstName, lastName, possition, gender, dateOfBirth } = req.body;
 
-  //if not exist some of field of user data - return error
-  if(!email || !firstName || !lastName || !possition || !dateOfBirth ){
-
-    return res.json({message: 'Incomplate fields'});
-
-  } 
-    else if( gender=='male' || gender =='female')
+  if( gender == 'male' || gender == 'female')
   {
+
     //chechking all data for create
     const validEmail = await checkerRegExp(email);
     if(!validEmail.status) return res.json({message: `${validEmail.data}_is incorrect`});
@@ -53,20 +48,11 @@ exports.checkUserInfo = async (req, res) => {
 exports.checkProjectInfo = async (req, res) => {
 
   //get project data
-  let { title, document } = req.body;
+  let { title } = req.body;
 
   //chechking all data for create
   const validTitle = await checkerRegExp(title);
   if(!validTitle.status) return res.json({message: `${validTitle.data}_is incorrect`});
-
-  if(document){
-    const docExtName = await path.extname(document)
-    if(docExtName === '.txt' || docExtName === '.doc' || docExtName === '.pdf' || docExtName === 'docx' || docExtName === 'xml' || docExtName === 'docm' || docExtName === 'potx'){
-      updateProjectData.document = document;
-    }else {
-      return res.json({message: `${document}_is incorrect`});
-    }
-  }
 
   return true;
 };

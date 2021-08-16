@@ -1,6 +1,7 @@
 const User = require('../schema/User');
 const valid = require('../validation/validate');
-const saveFile  = require('../lib/saveFiles');
+const Image = require('../schema/Image')
+const { v4: uuidv4 } = require('uuid');
 
 exports.getAllUsers = async(req, res, next) => {
   try{
@@ -8,7 +9,7 @@ exports.getAllUsers = async(req, res, next) => {
     //check all users
     const users = await User.find({});
 
-    //if users are not exist - return error
+    //if users are not exist - return errornodemon
     if(users.length===0) return res.json({message: 'Users are not exist'});
       
     return res.json(users);
@@ -52,8 +53,37 @@ exports.createUser = async(req, res) => {
     //if user already exist - return info message
     if(user.length === 0) return res.json({message: `User with email ${email} already exist`});
 
-    //call function for save image with user path
-    imageName = await saveFile(req.body.image, res);
+    var imageData = fs.readFileSync(__dirname + `/${conf.media.user_image_dir}/default.jpg`);
+
+    const image = new Image({
+			type: 'image/jpg',
+			data: imageData
+		});
+
+    const newImageUniqueName = uuidv4();
+
+    // Store the Image to the MongoDB
+		image.save()
+		.then(img => {
+			console.log("Saved an image 'default.jpg' to MongoDB.");
+
+			Image.findById(img, (err, findOutImage) => {
+				if (err) throw err;
+				try{
+					fs.writeFileSync(__dirname + `/${conf.media.user_image_dir}/users/${newImageUniqueName}.jpg`, findOutImage.data);
+
+					process.exit(0);
+				}catch(e){
+					console.log(e);
+				}
+			});
+		}).catch(err => {
+			console.log(err);
+			throw err;
+		});
+
+    // //call function for save image with user path
+    //imageName = await saveFile(req.body.image, res);
 
     //create user data
     const newUser = new User({
@@ -63,7 +93,7 @@ exports.createUser = async(req, res) => {
       possition,
       gender,
       dateOfBirth,
-      image: imageName
+      image: image
     });
   
     //save user in db
@@ -83,9 +113,6 @@ exports.updateUser = async(req, res) => {
 
     //check user data
     const checked = await valid.checkUserInfo(req, res);
-
-    //call function for save image with user path
-    //const imageName = await saveFile(req.body.image, imgConfPath = 'user', res, next);
 
     if(!checked.status) return res.json(checked)
 

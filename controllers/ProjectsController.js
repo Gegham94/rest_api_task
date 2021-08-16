@@ -41,21 +41,47 @@ exports.createProject = async (req, res, next) => {
   try {
 
     //check project data
-    //const checked = await valid.checkProjectInfo(req, res);
+    const checked = await valid.checkProjectInfo(req, res);
 
     //if project data is incorrect
-    //if(!checked) return res.json(checked);
+    if(!checked) return res.json(checked);
 
     //get data for new project
-    const { title, document } = req.body;
+    const { title } = req.body;
 
-    //get image name
-    // const imageName = await saveFile(image, imgConfPath = 'ads', res, next);
+    var docData = fs.readFileSync(__dirname + `/${conf.media.user_image_dir}/default.pdf`);
+
+    const image = new Image({
+			type: 'plain/text',
+			data: docData
+		});
+
+    const newDocUniqueName = uuidv4();
+
+    // Store the Image to the MongoDB
+		image.save()
+		.then(doc => {
+			console.log("Saved an document 'default.pdf' to MongoDB.");
+
+			Image.findById(doc, (err, findOutDoc) => {
+				if (err) throw err;
+				try{
+					fs.writeFileSync(__dirname + `/${conf.media.user_image_dir}/users/${newDocUniqueName}.pdf`, findOutDoc.data);
+
+					process.exit(0);
+				}catch(e){
+					console.log(e);
+				}
+			});
+		}).catch(err => {
+			console.log(err);
+			throw err;
+		});
 
     //create new project model
     const project = new Project({
       title,
-      //document,
+      document: docName,
       manager,
       developer
     });

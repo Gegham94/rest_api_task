@@ -1,5 +1,6 @@
 {
+  "DB" : "mongodb://localhost:27017/restapitaskDb",
   "media": {
-    "user_image_dir": "../public/images/users"
+    "user_image_dir": "../public/images/"
   }
 }

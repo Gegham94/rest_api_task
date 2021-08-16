@@ -1,3 +1,4 @@
+const mongoose = require("mongoose");
 const { Schema, model } = require('../lib/dbConnect');
 
 const userSchema = new Schema({
@@ -31,13 +32,9 @@ const userSchema = new Schema({
     type: String,
     required: true,
   },
-  // must put image data converted Base64 string
   image: {
-    type: String,
-    data: Buffer,
-    contentType: String,
-    default: "defailt.jpg",
-
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Image",
   },
 });
 
