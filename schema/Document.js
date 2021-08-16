@@ -1,8 +1,8 @@
 const { Schema, model } = require('../lib/dbConnect');
 
-const imageSchema = new Schema({
+const docSchema = new Schema({
     type: String,
     data: Buffer
 });
 
-module.exports = model('Document', imageSchema);
+module.exports = model('Document', docSchema);
