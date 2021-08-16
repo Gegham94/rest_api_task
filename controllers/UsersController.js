@@ -2,6 +2,7 @@ const User = require('../schema/User');
 const valid = require('../validation/validate');
 const Image = require('../schema/Image')
 const { v4: uuidv4 } = require('uuid');
+const fs = require('fs');
 
 exports.getAllUsers = async(req, res, next) => {
   try{

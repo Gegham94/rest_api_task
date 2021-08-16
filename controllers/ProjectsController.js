@@ -3,6 +3,7 @@ const User = require('../schema/User');
 const Document = require('../schema/Document')
 const valid = require('../validation/validate');
 const { v4: uuidv4 } = require('uuid');
+const fs = require('fs');
 
 exports.getAllProjects = async (req, res, next) => {
     try{
