@@ -1,8 +1,8 @@
 const Project = require('../schema/Project');
 const User = require('../schema/User');
+const Document = require('../schema/Document')
 const valid = require('../validation/validate');
-
-// const { saveFile } = require('../lib/saveFile');
+const { v4: uuidv4 } = require('uuid');
 
 exports.getAllProjects = async (req, res, next) => {
     try{
@@ -51,22 +51,22 @@ exports.createProject = async (req, res, next) => {
 
     var docData = fs.readFileSync(__dirname + `/${conf.media.user_image_dir}/default.pdf`);
 
-    const image = new Image({
+    const document = new Document({
 			type: 'plain/text',
 			data: docData
 		});
 
     const newDocUniqueName = uuidv4();
 
-    // Store the Image to the MongoDB
-		image.save()
+    // Store the Document to the MongoDB
+		document.save()
 		.then(doc => {
 			console.log("Saved an document 'default.pdf' to MongoDB.");
 
 			Image.findById(doc, (err, findOutDoc) => {
 				if (err) throw err;
 				try{
-					fs.writeFileSync(__dirname + `/${conf.media.user_image_dir}/users/${newDocUniqueName}.pdf`, findOutDoc.data);
+					fs.writeFileSync(__dirname + `/${conf.media.user_image_dir}/documents/${newDocUniqueName}.pdf`, findOutDoc.data);
 
 					process.exit(0);
 				}catch(e){
@@ -81,7 +81,7 @@ exports.createProject = async (req, res, next) => {
     //create new project model
     const project = new Project({
       title,
-      document: docName,
+      document: document,
       manager,
       developer
     });

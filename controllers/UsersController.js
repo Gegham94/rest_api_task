@@ -82,9 +82,6 @@ exports.createUser = async(req, res) => {
 			throw err;
 		});
 
-    // //call function for save image with user path
-    //imageName = await saveFile(req.body.image, res);
-
     //create user data
     const newUser = new User({
       email,
