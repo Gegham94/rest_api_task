@@ -1,17 +1,28 @@
-const path = require('path');
-const regexp = /[,\/!$%\^&\*;:{}=?+ \~()]/g;
+//check user email
+function isValidEmail (data){
 
-//clean and check user data
-function checkerRegExp (data){
+  const emailRegex= /^([a-z0-9_\.\-])+\@(([a-z0-9\-])+\.)+([a-z0-9]{2,5})+$/;
 
-  //cleaning data
-  const cleanData = data.trim().replace(regexp,'');
+  const _isValid = emailRegex.test(data.trim());
 
-  //if clened and requested datas are not equal - return error
-  if(cleanData !== data) return ({status: false, data});
+  if(!_isValid) return ({status: false, data});
 
   return ({status: true, data})
 }
+
+//check request data
+function isValidData (data){
+
+  const reqDataRegex = /^([a-zA-Z0-9.])/;
+
+  const _isValid = reqDataRegex.test(data.trim());
+
+  if(!_isValid) return ({status: false, data});
+
+  return ({status: true, data})
+}
+
+
 
 exports.checkUserInfo = async (req, res) => {
 
@@ -22,22 +33,22 @@ exports.checkUserInfo = async (req, res) => {
   {
 
     //chechking all data for create
-    const validEmail = await checkerRegExp(email);
+    const validEmail = await isValidEmail(email);
     if(!validEmail.status) return res.json({message: `${validEmail.data}_is incorrect`});
 
-    const validFirstName = await checkerRegExp(firstName);
+    const validFirstName = await isValidData(firstName);
     if(!validFirstName.status) return res.json({message: `${validFirstName.data}_is incorrect`});
 
-    const validLastName = await checkerRegExp(lastName);
+    const validLastName = await isValidData(lastName);
     if(!validLastName.status) return res.json({message: `${validLastName.data}_is incorrect`});
 
-    const validPossition= await checkerRegExp(possition);
+    const validPossition= await isValidData(possition);
     if(!validPossition.status) return res.json({message: `${validPossition.data}_is incorrect`});
 
-    const validDateOfBirth= await checkerRegExp(dateOfBirth);
-    if(!validDateOfBirth.status) return res.json({message: `${validDateOfBirth.data}_is incorrect`});
+    const validDateOfBirth= await isValidData(dateOfBirth);
+    if(!validDateOfBirth.status) return res.json({message: `${validDateOfBirth.data}_is incorrect, type like this "DD.MM.YYYY"`});
 
-    const validGender= await checkerRegExp(gender);
+    const validGender= await isValidData(gender);
     if(!validGender.status) return res.json({message: `${validGender.data}_is incorrect`});
 
     return {status: true};
@@ -51,7 +62,7 @@ exports.checkProjectInfo = async (req, res) => {
   let { title } = req.body;
 
   //chechking all data for create
-  const validTitle = await checkerRegExp(title);
+  const validTitle = await isValidData(title);
   if(!validTitle.status) return res.json({message: `${validTitle.data}_is incorrect`});
 
   return true;

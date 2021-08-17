@@ -1,6 +1,7 @@
 const User = require('../schema/User');
 const valid = require('../validation/validate');
-const Image = require('../schema/Image')
+const Image = require('../schema/Image');
+const conf = require('../config/configuration.json')
 const { v4: uuidv4 } = require('uuid');
 const fs = require('fs');
 
@@ -49,12 +50,12 @@ exports.createUser = async(req, res) => {
     const { email, firstName, lastName, possition, gender, dateOfBirth } = req.body;
 
     //get user by email
-    const user = await User.findOne({email})
+    const user = await User.findOne({email: email})
 
     //if user already exist - return info message
-    if(user.length === 0) return res.json({message: `User with email ${email} already exist`});
+    if(user) return res.json({message: `User with email ${email} already exist`});
 
-    var imageData = fs.readFileSync(__dirname + `/${conf.media.user_image_dir}/default.jpg`);
+    var imageData = fs.readFileSync(`${__dirname}/${conf.media.user_image_dir}/default.jpg`);
 
     const image = new Image({
 			type: 'image/jpg',
@@ -67,11 +68,11 @@ exports.createUser = async(req, res) => {
 		image.save()
 		.then(img => {
 			console.log("Saved an image 'default.jpg' to MongoDB.");
-
+      
 			Image.findById(img, (err, findOutImage) => {
 				if (err) throw err;
 				try{
-					fs.writeFileSync(__dirname + `/${conf.media.user_image_dir}/users/${newImageUniqueName}.jpg`, findOutImage.data);
+					fs.writeFileSync(`${__dirname}/${conf.media.user_image_dir}/users/${newImageUniqueName}.jpg`, findOutImage.data);
 
 					process.exit(0);
 				}catch(e){

@@ -50,7 +50,7 @@ exports.createProject = async (req, res, next) => {
     //get data for new project
     const { title } = req.body;
 
-    var docData = fs.readFileSync(__dirname + `/${conf.media.user_image_dir}/default.pdf`);
+    var docData = fs.readFileSync(`${__dirname}/${conf.media.user_image_dir}/default.pdf`);
 
     const document = new Document({
 			type: 'plain/text',
@@ -67,7 +67,7 @@ exports.createProject = async (req, res, next) => {
 			Image.findById(doc, (err, findOutDoc) => {
 				if (err) throw err;
 				try{
-					fs.writeFileSync(__dirname + `/${conf.media.user_image_dir}/documents/${newDocUniqueName}.pdf`, findOutDoc.data);
+					fs.writeFileSync(`${__dirname}/${conf.media.user_image_dir}/documents/${newDocUniqueName}.pdf`, findOutDoc.data);
 
 					process.exit(0);
 				}catch(e){
