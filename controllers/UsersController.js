@@ -55,7 +55,7 @@ exports.createUser = async(req, res) => {
     //if user already exist - return info message
     if(user) return res.json({message: `User with email ${email} already exist`});
 
-    var imageData = fs.readFileSync(`${__dirname}/${conf.media.user_image_dir}/default.jpg`);
+    var imageData = fs.readFileSync(`${__dirname}/${conf.media.directory}/default.jpg`);
 
     const image = new Image({
 			type: 'image/jpg',
@@ -72,9 +72,10 @@ exports.createUser = async(req, res) => {
 			Image.findById(img, (err, findOutImage) => {
 				if (err) throw err;
 				try{
-					fs.writeFileSync(`${__dirname}/${conf.media.user_image_dir}/users/${newImageUniqueName}.jpg`, findOutImage.data);
 
+					fs.writeFileSync(`${__dirname}/${conf.media.directory}/users/${newImageUniqueName}.jpg`, findOutImage.data);
 					process.exit(0);
+
 				}catch(e){
 					console.log(e);
 				}
@@ -98,12 +99,12 @@ exports.createUser = async(req, res) => {
     //save user in db
     const savedUser = await newUser.save();
 
-    if(!savedUser) {
-      return new Error({ message: 'User is not saved !' });
-    }else return({ message: 'User is saved !' });
+    if(savedUser) {
+      return res.json({ message: 'User is saved', data: savedUser});
+    }else return res.json({ message: 'User is nod saved !', data: savedUser });
 
   } catch (err) {
-    return 'Some error occurred while creating the User';
+    return res.json({ message: 'Some error occurred while creating the User', data: err });
   }
 };
 
@@ -130,7 +131,7 @@ exports.updateUser = async(req, res) => {
     return res.json({message: 'User updated'});
 
   } catch (err) {
-    return 'Some error occurred while updating the User';
+    return res.json({ message: 'Some error occurred while updating the User', data: err });
   }
 };
 
@@ -150,6 +151,6 @@ exports.deleteUser = async(req, res, next) => {
       });
     
   }catch(err){
-    return 'Some error durring delete user';
+    return res.json({ message: 'Some error durring delete User', data: err });
   }
 };

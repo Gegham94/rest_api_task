@@ -2,6 +2,7 @@ const Project = require('../schema/Project');
 const User = require('../schema/User');
 const Document = require('../schema/Document')
 const valid = require('../validation/validate');
+const conf = require('../config/configuration.json')
 const { v4: uuidv4 } = require('uuid');
 const fs = require('fs');
 
@@ -48,9 +49,9 @@ exports.createProject = async (req, res, next) => {
     if(!checked) return res.json(checked);
 
     //get data for new project
-    const { title } = req.body;
+    const { title , manager , developer } = req.body;
 
-    var docData = fs.readFileSync(`${__dirname}/${conf.media.user_image_dir}/default.pdf`);
+    var docData = fs.readFileSync(`${__dirname}/${conf.media.directory}/default.pdf`);
 
     const document = new Document({
 			type: 'plain/text',
@@ -64,10 +65,10 @@ exports.createProject = async (req, res, next) => {
 		.then(doc => {
 			console.log("Saved an document 'default.pdf' to MongoDB.");
 
-			Image.findById(doc, (err, findOutDoc) => {
+			Document.findById(doc, (err, findOutDoc) => {
 				if (err) throw err;
 				try{
-					fs.writeFileSync(`${__dirname}/${conf.media.user_image_dir}/documents/${newDocUniqueName}.pdf`, findOutDoc.data);
+					fs.writeFileSync(`${__dirname}/${conf.media.directory}/documents/${newDocUniqueName}.pdf`, findOutDoc.data);
 
 					process.exit(0);
 				}catch(e){
@@ -90,7 +91,9 @@ exports.createProject = async (req, res, next) => {
     //save new project
     const savedProject = await project.save();
 
-    return res.json({message: 'Project created !', savedProject});
+    if(savedProject) {
+      return res.json({ message: 'Project is saved', data: savedProject});
+    }else return res.json({ message: 'Project is nod saved !', data: savedProject });
 
   } catch (err) {
     return next(err);
