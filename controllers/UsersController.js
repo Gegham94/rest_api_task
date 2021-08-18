@@ -73,7 +73,7 @@ exports.createUser = async(req, res) => {
 				if (err) throw err;
 				try{
 
-					fs.writeFileSync(`${__dirname}/${conf.media.directory}/users/${newImageUniqueName}.jpg`, findOutImage.data);
+					fs.writeFileSync(`${__dirname}/${conf.media.directory}/images/${newImageUniqueName}.jpg`, findOutImage.data);
 					process.exit(0);
 
 				}catch(e){
