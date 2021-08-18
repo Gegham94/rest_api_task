@@ -12,7 +12,7 @@ exports.getAllUsers = async(req, res, next) => {
     const users = await User.find({});
 
     //if users are not exist - return errornodemon
-    if(users.length===0) return res.json({message: 'Users are not exist'});
+    if(!users) return res.json({message: 'Users are not exist'});
       
     return res.json(users);
 
@@ -28,7 +28,7 @@ exports.getUserById = async(req, res, next) => {
     const user = await User.findById({ _id: req.params.id})
 
     //if user are not exist - return error
-    if(users.length==0) return res.json({message: 'User is not found'});
+    if(!user) return res.json({message: 'User is not found'});
     
     //if user finded - return user
     return res.json({message: "Here is user", data: user });
@@ -122,31 +122,32 @@ exports.updateUser = async(req, res) => {
     User.findByIdAndUpdate(id, req.body, { useFindAndModify: false })
       .then(data => {
         if(!data){
-          res.status(404).send({message: 'User is not found !'});
+          return res.status(404).send({message: 'User is not found !'});
         }else {
-          res.status(404).send({message: 'User is updated'});
+          return res.status(404).send({message: 'User is updated', data});
         }
+      }).catch(err => {
+        console.log(err);
+        throw err;
       });
-
-    return res.json({message: 'User updated'});
 
   } catch (err) {
     return res.json({ message: 'Some error occurred while updating the User', data: err });
   }
 };
 
-exports.deleteUser = async(req, res, next) => {
+exports.deleteUser = async(req, res) => {
   try{
 
     //get user id from params
     const id = req.params.id;
 
-    User.findByIdAndRemove(id)
+    User.findByIdAndRemove({ _id: id})
       .then(data => {
         if(!data){
-          res.status(404).send({message: 'User is not found !'});
+          return res.status(404).send({message: 'User is not found !'});
         }else {
-          res.status(404).send({message: 'User is successfuly deleted'});
+          return res.status(404).send({message: 'User is successfuly deleted'});
         }
       });
     

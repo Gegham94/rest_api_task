@@ -11,10 +11,9 @@ exports.getAllProjects = async (req, res, next) => {
 
       //check all projects
       const projects = await Project.find({});
-      console.log(projects)
 
       //if project are not exist - return error
-      if(projects.length === 0) return res.json({message: 'Projects are not found'});
+      if(!projects) return res.json({message: 'Projects are not found'});
       
       return res.json(projects);
 
@@ -30,7 +29,7 @@ exports.getProjectById = async(req, res, next) => {
       const project = await Project.findById({ _id: req.params.id})
 
       //if project is not exist - return error
-      if(project.length === 0) return next('Project is not found');
+      if(!project) return next('Project is not found');
 
       return res.json({message: "Here is project", project });
 
@@ -110,7 +109,7 @@ exports.assignProjectManager = async (req, res, next) => {
     const user = await User.findOne({email});
 
     //if user is not exist - return error
-    if(user.length === 0) return res.json({message: "User is not found"});
+    if(!user) return res.json({message: "User is not found"});
 
     const id = req.params.id;
 
@@ -120,9 +119,9 @@ exports.assignProjectManager = async (req, res, next) => {
           manager: user
         }
       },
-      (err, data) => {
+      (err) => {
         if(err) return res.json(err);
-        return res.json({message: 'Manager is assigned', data});
+        return res.json({message: 'Manager is assigned'});
       }
     );
 
@@ -141,7 +140,9 @@ exports.assignProjectDeveloper = async (req, res, next) => {
     const user = await User.findOne({email});
 
     //if user is not exist - return error
-    if(user.length === 0) return res.json({message: "User is not found"});
+    if(!user) return res.json({message: "User is not found"});
+
+    const id = req.params.id;
 
     Project.findByIdAndUpdate({_id: id},
       {
@@ -149,9 +150,9 @@ exports.assignProjectDeveloper = async (req, res, next) => {
           developer: user
         }
       },
-      (err, data) => {
+      (err) => {
         if(err) return res.json(err);
-        return res.json({message: 'Developer is assigned', data});
+        return res.json({message: 'Developer is assigned'});
       }
     );
 
@@ -166,7 +167,7 @@ exports.deleteProject = async (req, res) => {
     //get project id from params
     const id = req.params.id;
 
-    await Project.findOne({_id: id})
+    Project.findByIdAndRemove({ _id: id})
       .then(data => {
         if(!data){
           res.status(404).send({message: 'Project is not found !'});
