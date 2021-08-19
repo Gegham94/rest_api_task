@@ -62,8 +62,6 @@ exports.createProject = async (req, res, next) => {
     // Store the Document to the MongoDB
 		document.save()
 		.then(doc => {
-			console.log("Saved an document 'default.pdf' to MongoDB.");
-
 			Document.findById(doc, (err, findOutDoc) => {
 				if (err) throw err;
 				try{
@@ -71,12 +69,11 @@ exports.createProject = async (req, res, next) => {
 
 					process.exit(0);
 				}catch(err){
-					res.json({message: "Error", data: err});
+					return res.json({message: "Error", data: err});
 				}
 			});
 		}).catch(err => {
-			res.json({message: "Error", data: err})
-			throw err;
+			return res.json({message: "Error", data: err})
 		});
 
     //create new project model
@@ -88,14 +85,15 @@ exports.createProject = async (req, res, next) => {
     });
 
     //save new project
-    const savedProject = await project.save();
-
-    if(savedProject) {
-      return res.json({ message: 'Project is saved', data: savedProject});
-    }else return res.json({ message: 'Project is nod saved !', data: savedProject });
+    await project.save()
+      .then(savedProject => {
+        return res.json({ message: 'Project is saved', data: savedProject});
+      }).catch( err => {
+        return res.json({ message: 'Project is nod saved !', data: err });
+      });
 
   } catch (err) {
-    return next(err);
+    return res.json({ message: 'Some error occurred while creating the Project', data: err });
   }
 };
 

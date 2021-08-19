@@ -67,8 +67,6 @@ exports.createUser = async(req, res) => {
     // Store the Image to the MongoDB
 		image.save()
 		.then(img => {
-			console.log("Saved an image 'default.jpg' to MongoDB.");
-      
 			Image.findById(img, (err, findOutImage) => {
 				if (err) throw err;
 				try{
@@ -77,12 +75,11 @@ exports.createUser = async(req, res) => {
 					process.exit(0);
 
 				}catch(err){
-					res.json({message: "Error", data: err});
+					return res.json({message: "Error", data: err});
 				}
 			});
 		}).catch(err => {
-			res.json({message: "Error", data: err});
-			throw err;
+			return res.json({message: "Error", data: err});
 		});
 
     //create user data
@@ -97,11 +94,12 @@ exports.createUser = async(req, res) => {
     });
   
     //save user in db
-    const savedUser = await newUser.save();
-
-    if(savedUser) {
-      return res.json({ message: 'User is saved', data: savedUser});
-    }else return res.json({ message: 'User is nod saved !', data: savedUser });
+    await newUser.save()
+      .then(savedUser => {
+        return res.json({ message: 'User is saved', data: savedUser});
+      }).catch(err => {
+        return res.json({ message: 'User is nod saved !', data: err });
+      });
 
   } catch (err) {
     return res.json({ message: 'Some error occurred while creating the User', data: err });
