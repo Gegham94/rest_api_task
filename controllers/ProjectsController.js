@@ -70,12 +70,12 @@ exports.createProject = async (req, res, next) => {
 					fs.writeFileSync(`${__dirname}/${conf.media.directory}/documents/${newDocUniqueName}.pdf`, findOutDoc.data);
 
 					process.exit(0);
-				}catch(e){
-					console.log(e);
+				}catch(err){
+					res.json({message: "Error", data: err});
 				}
 			});
 		}).catch(err => {
-			console.log(err);
+			res.json({message: "Error", data: err})
 			throw err;
 		});
 

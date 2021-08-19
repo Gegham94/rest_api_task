@@ -76,12 +76,12 @@ exports.createUser = async(req, res) => {
 					fs.writeFileSync(`${__dirname}/${conf.media.directory}/images/${newImageUniqueName}.jpg`, findOutImage.data);
 					process.exit(0);
 
-				}catch(e){
-					console.log(e);
+				}catch(err){
+					res.json({message: "Error", data: err});
 				}
 			});
 		}).catch(err => {
-			console.log(err);
+			res.json({message: "Error", data: err});
 			throw err;
 		});
 
@@ -127,7 +127,7 @@ exports.updateUser = async(req, res) => {
           return res.status(404).send({message: 'User is updated', data});
         }
       }).catch(err => {
-        console.log(err);
+        res.json({message: "Error", data: err})
         throw err;
       });
 
