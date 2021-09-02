@@ -7,15 +7,13 @@
     "dev": "nodemon ./bin/www"
   },
   "dependencies": {
-    "base64-img": "^1.0.4",
-    "body-parser": "^1.19.0",
     "cookie-parser": "~1.4.4",
-    "crypto": "^1.0.1",
     "debug": "~2.6.9",
     "express": "^4.16.4",
     "fs": "0.0.1-security",
     "mongoose": "^5.13.7",
     "morgan": "~1.9.1",
+    "multer": "^1.4.3",
     "path": "^0.12.7",
     "uuid": "^8.3.2"
   },

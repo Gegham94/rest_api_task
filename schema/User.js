@@ -1,4 +1,3 @@
-const mongoose = require("mongoose");
 const { Schema, model } = require('../lib/dbConnect');
 
 const userSchema = new Schema({
@@ -33,8 +32,7 @@ const userSchema = new Schema({
     required: true,
   },
   image: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Image",
+    type: String,
   },
 });
 

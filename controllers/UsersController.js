@@ -1,17 +1,14 @@
 const User = require('../schema/User');
 const valid = require('../validation/validate');
-const Image = require('../schema/Image');
-const conf = require('../config/configuration.json')
-const { v4: uuidv4 } = require('uuid');
 const fs = require('fs');
+const conf = require('../config/configuration.json');
+const { v4: uuidv4 } = require('uuid');
+const path = require('path');
 
 exports.getAllUsers = async(req, res, next) => {
   try{
 
-    //check all users
     const users = await User.find({});
-
-    //if users are not exist - return errornodemon
     if(!users) return res.json({message: 'Users are not exist'});
       
     return res.json(users);
@@ -24,14 +21,9 @@ exports.getAllUsers = async(req, res, next) => {
 exports.getUserById = async(req, res, next) => {
   try{
 
-    //chack user by id
     const user = await User.findById({ _id: req.params.id})
-
-    //if user are not exist - return error
     if(!user) return res.json({message: 'User is not found'});
-    
-    //if user finded - return user
-    return res.json({message: "Here is user", data: user });
+    return res.json({message: "User", data: user });
     
   }catch(err){
     return next(err);
@@ -41,48 +33,21 @@ exports.getUserById = async(req, res, next) => {
 exports.createUser = async(req, res) => {
   try{
 
-    //check user data
     const checked = await valid.checkUserInfo(req, res);
-
     if(!checked.status) return res.json(checked)
 
-    //get user data from request
     const { email, firstName, lastName, possition, gender, dateOfBirth } = req.body;
-
-    //get user by email
     const user = await User.findOne({email: email})
-
-    //if user already exist - return info message
     if(user) return res.json({message: `User with email ${email} already exist`});
 
-    var imageData = fs.readFileSync(`${__dirname}/${conf.media.directory}/default.jpg`);
-
-    const image = new Image({
-			type: 'image/jpg',
-			data: imageData
-		});
+    const match = ["image/png", "image/jpeg", "image/jpg"];
+    if(match.indexOf(req.file.mimetype) === -1){
+      return res.json({status: 'Fail', message: 'Incorrect image type'})
+    } 
 
     const newImageUniqueName = uuidv4();
+    fs.writeFileSync(`${conf.media.directory}/images/${newImageUniqueName}${path.extname(req.file.originalname)}`, req.file.buffer);
 
-    // Store the Image to the MongoDB
-		image.save()
-		.then(img => {
-			Image.findById(img, (err, findOutImage) => {
-				if (err) throw err;
-				try{
-
-					fs.writeFileSync(`${__dirname}/${conf.media.directory}/images/${newImageUniqueName}.jpg`, findOutImage.data);
-					process.exit(0);
-
-				}catch(err){
-					return res.json({message: "Error", data: err});
-				}
-			});
-		}).catch(err => {
-			return res.json({message: "Error", data: err});
-		});
-
-    //create user data
     const newUser = new User({
       email,
       firstName,
@@ -90,10 +55,9 @@ exports.createUser = async(req, res) => {
       possition,
       gender,
       dateOfBirth,
-      image: image
+      image: `http://localhost:3000/${conf.media.directory}/images/${newImageUniqueName}${path.extname(req.file.originalname)}`
     });
   
-    //save user in db
     await newUser.save()
       .then(savedUser => {
         return res.json({ message: 'User is saved', data: savedUser});
@@ -109,14 +73,10 @@ exports.createUser = async(req, res) => {
 exports.updateUser = async(req, res) => {
   try{
 
-    //check user data
     const checked = await valid.checkUserInfo(req, res);
-
     if(!checked.status) return res.json(checked)
 
-    //get user id from params
     const id = req.params.id;
-
     User.findByIdAndUpdate(id, req.body, { useFindAndModify: false })
       .then(data => {
         if(!data){
@@ -137,7 +97,6 @@ exports.updateUser = async(req, res) => {
 exports.deleteUser = async(req, res) => {
   try{
 
-    //get user id from params
     const id = req.params.id;
 
     User.findByIdAndRemove({ _id: id})

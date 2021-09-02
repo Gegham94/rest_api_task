@@ -2,9 +2,7 @@
 function isValidEmail (data){
 
   const emailRegex= /^([a-z0-9_\.\-])+\@(([a-z0-9\-])+\.)+([a-z0-9]{2,5})+$/;
-
   const _isValid = emailRegex.test(data.trim());
-
   if(!_isValid) return ({status: false, data});
 
   return ({status: true, data})
@@ -14,25 +12,18 @@ function isValidEmail (data){
 function isValidData (data){
 
   const reqDataRegex = /^([a-zA-Z0-9.])/;
-
   const _isValid = reqDataRegex.test(data.trim());
-
   if(!_isValid) return ({status: false, data});
 
   return ({status: true, data})
 }
 
-
-
 exports.checkUserInfo = async (req, res) => {
 
-  //get user data
   let { email, firstName, lastName, possition, gender, dateOfBirth } = req.body;
-
   if( gender == 'male' || gender == 'female')
   {
 
-    //chechking all data for create
     const validEmail = await isValidEmail(email);
     if(!validEmail.status) return res.json({message: `${validEmail.data}_is incorrect`});
 
@@ -53,15 +44,13 @@ exports.checkUserInfo = async (req, res) => {
 
     return {status: true};
     
-  } else return res.json({message: 'Incorrect gender, Please type `male` or `female` fields'});
+  } else return res.json({message: 'Incorrect gender, Please type `male` or `female`'});
 };
 
 exports.checkProjectInfo = async (req, res) => {
 
-  //get project data
   let { title } = req.body;
 
-  //chechking all data for create
   const validTitle = await isValidData(title);
   if(!validTitle.status) return res.json({message: `${validTitle.data}_is incorrect`});
 

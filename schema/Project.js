@@ -13,8 +13,7 @@ const projectSchema = new Schema({
     trim: true,
   },
   document: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Document",
+    type: String,
   },
   developer: {
     type: mongoose.Schema.Types.ObjectId,
