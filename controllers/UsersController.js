@@ -1,9 +1,28 @@
 const User = require('../schema/User');
 const valid = require('../validation/validate');
-const fs = require('fs');
 const conf = require('../config/configuration.json');
+const verifyEmailTemplate = require('../utils/verifyEmailTemplate');
+const { updateTokens } = require('../helper/generateTokens');
 const { v4: uuidv4 } = require('uuid');
 const path = require('path');
+const fs = require('fs');
+
+exports.loginUser = async (req, res, next) => {
+  try {
+
+    const {email, password} = req.body;
+    const user = await User.findOne({email});
+    if(!user || !user.checkPassword(password)) return res.json({ message: `Incorrect Email or Password !`});
+  
+    const token = await updateTokens();
+    if(!token) return res.json({message: 'Token does not created !'});
+
+    return res.json({message: 'Login is succesfuly done', token, userId: user._id});
+    
+  } catch (error) {
+    return next(error);
+  }
+};
 
 exports.getAllUsers = async(req, res, next) => {
   try{
@@ -61,6 +80,8 @@ exports.createUser = async(req, res) => {
       }).catch(err => {
         return res.json({ message: 'User is nod saved !', data: err });
       });
+
+    await verifyEmailTemplate.sendEmail(req, res, next, email, firstName);
 
   } catch (err) {
     return res.json({ message: 'Some error occurred while creating the User', data: err });

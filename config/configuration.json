@@ -2,5 +2,20 @@
   "DB" : "mongodb://localhost:27017/user_api_db",
   "media": {
     "directory": "public/files"
+  },
+  "jwt": {
+    "payload": "a8CdFj-koP8RcdFgF07hJa1cv",
+    "secretKey": "fg1C0-Sec77coPltuYdeAc99"
+  },
+  "smtpServer": {
+    "host": "smtp.yandex.ru",
+    "from": "gegham.wedoappsllc@yandex.ru",
+    "post": "directory",
+    "port": 465,
+    "secure": true,
+    "auth": {
+      "user": "gegham.wedoappsllc@yandex.ru",
+      "pass": "38220129495#1"
+    }
   }
 }
