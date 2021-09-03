@@ -8,7 +8,6 @@ const path = require('path');
 
 exports.getAllProjects = async (req, res, next) => {
   try{
-
     const projects = await Project.find({});
     if(!projects) return res.json({message: 'Projects are not found'});
     
@@ -21,7 +20,6 @@ exports.getAllProjects = async (req, res, next) => {
 
 exports.getProjectById = async(req, res, next) => {
   try{
-
     const project = await Project.findById({ _id: req.params.id})
     if(!project) return next('Project is not found');
 
@@ -34,7 +32,6 @@ exports.getProjectById = async(req, res, next) => {
 
 exports.createProject = async (req, res, next) => {
   try {
-
     const checked = await valid.checkProjectInfo(req, res);
     if(!checked) return res.json(checked);
 
@@ -70,7 +67,6 @@ exports.createProject = async (req, res, next) => {
 
 exports.assignProjectManager = async (req, res, next) => {
   try{
-
     const {email} = req.body;
     const user = await User.findOne({email});
     if(!user) return res.json({message: "User is not found"});
@@ -93,7 +89,6 @@ exports.assignProjectManager = async (req, res, next) => {
 
 exports.assignProjectDeveloper = async (req, res, next) => {
   try{
-
     const {email} = req.body;
     const user = await User.findOne({email});
     if(!user) return res.json({message: "User is not found"});
@@ -116,7 +111,6 @@ exports.assignProjectDeveloper = async (req, res, next) => {
 
 exports.deleteProject = async (req, res) => {
   try{
-
     const id = req.params.id;
     Project.findByIdAndRemove({ _id: id})
       .then(data => {

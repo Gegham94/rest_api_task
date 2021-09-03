@@ -7,7 +7,6 @@ const path = require('path');
 
 exports.getAllUsers = async(req, res, next) => {
   try{
-
     const users = await User.find({});
     if(!users) return res.json({message: 'Users are not exist'});
       
@@ -20,7 +19,6 @@ exports.getAllUsers = async(req, res, next) => {
 
 exports.getUserById = async(req, res, next) => {
   try{
-
     const user = await User.findById({ _id: req.params.id})
     if(!user) return res.json({message: 'User is not found'});
     return res.json({message: "User", data: user });
@@ -32,7 +30,6 @@ exports.getUserById = async(req, res, next) => {
 
 exports.createUser = async(req, res) => {
   try{
-
     const checked = await valid.checkUserInfo(req, res);
     if(!checked.status) return res.json(checked)
 
@@ -72,7 +69,6 @@ exports.createUser = async(req, res) => {
 
 exports.updateUser = async(req, res) => {
   try{
-
     const checked = await valid.checkUserInfo(req, res);
     if(!checked.status) return res.json(checked)
 
@@ -96,7 +92,6 @@ exports.updateUser = async(req, res) => {
 
 exports.deleteUser = async(req, res) => {
   try{
-
     const id = req.params.id;
 
     User.findByIdAndRemove({ _id: id})
