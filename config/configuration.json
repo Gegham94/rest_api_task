@@ -1,5 +1,5 @@
 {
-  "DB" : "mongodb://localhost:27017/restapitaskDb",
+  "DB" : "mongodb://localhost:27017/user_api_db",
   "media": {
     "directory": "public/files"
   }
