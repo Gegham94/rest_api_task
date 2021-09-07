@@ -11,7 +11,7 @@ exports.loginUser = async (req, res, next) => {
   try {
 
     const {email, password} = req.body;
-    const user = await User.findOne({email});
+    const user = await User.findOne({email: email});
     if(!user || !user.checkPassword(password)) return res.json({ message: `Incorrect Email or Password !`});
   
     const token = await updateTokens();
@@ -47,12 +47,12 @@ exports.getUserById = async(req, res, next) => {
   }
 };
 
-exports.createUser = async(req, res) => {
+exports.createUser = async(req, res, next) => {
   try{
     const checked = await valid.checkUserInfo(req, res);
     if(!checked.status) return res.json(checked)
 
-    const { email, firstName, lastName, possition, gender, dateOfBirth } = req.body;
+    const { email, firstName, lastName, possition, gender, dateOfBirth, password } = req.body;
     const user = await User.findOne({email: email})
     if(user) return res.json({message: `User with email ${email} already exist`});
 
@@ -71,17 +71,17 @@ exports.createUser = async(req, res) => {
       possition,
       gender,
       dateOfBirth,
+      password,
       image: `http://localhost:3000/${conf.media.directory}/images/${newImageUniqueName}${path.extname(req.file.originalname)}`
     });
   
     await newUser.save()
-      .then(savedUser => {
+      .then(async savedUser => {
+        await verifyEmailTemplate.sendEmail(req, res, next, email, firstName);
         return res.json({ message: 'User is saved', data: savedUser});
       }).catch(err => {
         return res.json({ message: 'User is nod saved !', data: err });
       });
-
-    await verifyEmailTemplate.sendEmail(req, res, next, email, firstName);
 
   } catch (err) {
     return res.json({ message: 'Some error occurred while creating the User', data: err });

@@ -128,7 +128,7 @@ exports.sendEmail = async (req, res, next, email, firstName) => {
     //get user data
     random = `Sec-${uuidv4()}-Code`;
     host = req.get('host');
-    link = `http://${host}/auth/email/verify?id=${random}_${email}`;
+    link = `http://${host}/users/email/verify?id=${random}_${email}`;
 
     //create mail options
     const mailOptions = {
@@ -138,8 +138,11 @@ exports.sendEmail = async (req, res, next, email, firstName) => {
       html: template( firstName, link )
     };
 
+    console.log(mailOptions);
     //send email verification
     const sendDone = await transporter.sendMail(mailOptions);
+
+    console.log(sendDone);
 
     //if verification message is not sended - return error
     if(!sendDone){
@@ -159,6 +162,8 @@ exports.sendEmail = async (req, res, next, email, firstName) => {
 exports.verifyEmail = async(req, res, next) => {
   try{
 
+    console.log(req.protocol);
+    console.log(req.get('host'));
     //chechking protocols are equals or not
     if(`${req.protocol}://${req.get('host')}` === `http://${host}`){
       if(req.query.id.split('_')[0] === random){
